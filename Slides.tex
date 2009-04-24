@@ -1,0 +1,157 @@
+\documentclass{beamer}
+\usepackage{amsmath}
+%\usepackage{beamerthemesplit}
+\usetheme{Goettingen}
+\title{Essence of Functional programming}
+\subtitle{Part 2}
+\author{Clara B. Behrmann \and Johan Brinch  \and  Frej Soya}
+\date{\today}
+\newcommand{\bind}{\texttt{>>=}}
+\newcommand{\ret}{\texttt{return}}
+\newcommand{\bs}{\char`\\}
+\newcommand{\fs}{\char`/}
+\newcommand{\at}{\texttt{a}}
+\newcommand{\kt}{\texttt{k}}
+\newcommand{\mt}{\texttt{k}}
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\section*{Outline}
+\begin{frame}
+  \tableofcontents
+\end{frame}
+
+\section{Monads Invariants}
+\subsection{The  3 Invariants}
+\frame{
+ \frametitle{Monad Invariants}
+\begin{align}
+\tag{Left identity}  &\ret\ \at~ & &\bind~\texttt{k}& &= \texttt{k a}\\ 
+\tag{Right identity} &\mt~ & &\bind\ \ret&  &= \texttt{m} 	 \\
+\tag{Associativity} &ToDO 
+\end{align}
+}
+\subsection{Using the invariants}
+
+\frame{
+\frametitle{The Error monads }
+Show how the error monad follows the invariants (or pick another monad)
+}
+\frame{
+\frametitle{Monad syntax in haskell}
+1-3 slides of examples comparing bind/unit with do-syntax (transliteration)
+}
+\frame{
+\frametitle{How does them monad laws help me?}
+1-3. How monads help the naive programmer. (Don't break normal expectations)
+}
+\subsection{Monads and lists}
+
+\frame{
+\frametitle{For list monads}
+For the list monad together with the 3 invariants. The following invariants for Map and join apply.
+\begin{itemize}
+\item MapM 
+\item JoinM
+\item There are 7 extra invariants.
+\end{itemize}
+using the last one (8th) together with the 7 above, we can deduce the original 3 monad invariants 
+}
+
+\frame{
+\frametitle{Monads can generalise list comprehensions}
+Not that interesting?, Summary of another paper\\ 
+Basicly any list comprehension in haskell can be translated to a monad.  \\
+Thus list comphensions are syntactic sugar for some monads.
+}
+\section{Continuations}
+\subsection{The CPS interpreter}
+\frame{
+\frametitle{Monad of continuations} 
+The continuation monad ``\texttt{K}'' \\
+Expressing continuations using monads. \\
+TODO: Write the K monad in bind and return form.\\
+}
+\frame{
+\frametitle{CPS interpreter} 
+\emph{kill this slide}\\  
+Creating a CPS intepreter using monads.
+But this time wadlers also ``simplifies''
+\begin{itemize}
+\item By removing each of occurrence of \bind 
+\item adding  ``bits'' to front to capture the continuation
+\item adding ``bits to the end pass the continuation
+\end{itemize}
+ Each operation passes on the actual computation to the next function as a 'continuation'
+}
+\frame{
+\frametitle{What does continuation mean?}
+Example with add
+Instead of evaluating the actual ``add``. The ``add'' computations is passed on to the next expression the interpreter meets. \\
+This is done for all Terms, not just add.
+}
+\subsection{Call with current continuation}
+\frame{
+\frametitle{Call with current continuation}
+This is too wordy on purpose... sorry about that ;). 
+\begin{itemize}
+\item Callcc takes the continuation and creates a new Function 
+\item The function is saved in the enviroment
+\item Interprets the remaining expression with new enviroment
+\item Var extracts the continuation from the enviroment
+\item The Function is called with the ``4'' as argument
+\end{itemize}
+}
+
+\subsection{Monads can express CPS}
+\frame{
+\frametitle{The CPS interpreter can act as a Monad interpreter}
+By selecting the right type for \texttt{Answer}, the CPS interpreter can act as the original monad based interpreter. \\
+TODO: Write the definitions of PromoteK, ShowK\\
+}
+\frame{
+\frametitle{Preserves modularity}
+Wadler shows it's just as simple with the CPS style monad interpreter as using the monad interpreter. \\ 
+Examples with Error, State and Output monad. (Not that simple but anyhow).
+}
+\subsection{CPS can express Monads}
+\frame{
+\frametitle{Comparing CPS and Monads}
+Wadler compares CPS and Monads
+\begin{itemize}
+\item CPS always provides escape facility.
+\item For monads it's a choice
+\item We can fix this with expressing CPS as monads.
+\end{itemize}
+}
+
+\section{What's the gain\ldots}
+\subsection{I don't care about interpreters!}
+\frame{
+\frametitle{Applying this from a usage viewpoint}
+If i'm not a language researcher, when is this cool?
+\begin{itemize}
+\item Example A
+\item Example B
+\item Example C
+\end{itemize}
+}
+\subsection{Examples}
+\frame{
+\frametitle{Example A}
+A
+}
+\frame{
+\frametitle{Example B}
+B
+}
+\frame{
+\frametitle{Example C}
+C
+}
+\end{document}
+			    
