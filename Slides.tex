@@ -3,7 +3,7 @@
 \usepackage{listings}
 \lstset{language=Haskell,basicstyle=\ttfamily}
 %\usepackage{beamerthemesplit}
-\usetheme{Goettingen}
+\usetheme{Szeged}
 
 \title{Essence of Functional programming}
 \subtitle{Part 2}
@@ -24,13 +24,14 @@
 
 
 %\section*{Outline}
-\begin{frame}
-  \tableofcontents
-\end{frame}
+%\begin{frame}
+%  \tableofcontents
+%\end{frame}
 
 
 \section{Monads Invariants}
-\subsection{The 3 Invariants}
+%\subsection{The 3 Invariants}
+\subsection{}
 \frame{
  \frametitle{Monad Laws}
 The monad laws consists of 3 invariants, that any monad must adhere to:
@@ -45,15 +46,15 @@ The monad laws consists of 3 invariants, that any monad must adhere to:
  % &ToDO && \text{3: Associativity} 
 \end{align*}
 }
-\subsection{Using the invariants}
+%\subsection{Using the invariants}
 \begin{frame}[fragile]
 \frametitle{The Error Monad}
 \begin{lstlisting}
 data E = Suc a | Err String
 Instance Monad E where
-    return a          = Suc a     
-    (Suc a)     >>= k = k a
-    (Err s)   >>= k = Err s
+    return a       = Suc a     
+    (Suc a) >>= k  = k a
+    (Err s) >>= k  = Err s
 \end{lstlisting}
 Show how the error monad follows the invariants (or pick another monad)
 \end{frame}
@@ -92,13 +93,13 @@ Works if your types match (most of the time ;))
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Monad syntax in haskell}
+\frametitle{Monad syntax sugar in haskell}
 \begin{columns}[t]
   \begin{column}{5cm}
 \begin{lstlisting}
 do { x <- m0
    ; y <- m1
-   ;  return x+y
+   ; return x+y
    }
 \end{lstlisting}
   \end{column}
@@ -136,6 +137,7 @@ skip_and_get =
 \end{lstlisting}
   \end{column}
 \end{columns}
+\pause
 \textbf{The right identity law provides this expected equivalence:} 
 \vspace{-0.5cm}
 \begin{columns}[t]
@@ -163,7 +165,7 @@ skip_and_get =
 
 
 
-%\subsection{Monads and lists}
+%%\subsection{Monads and lists}
 %\frame{
 %\frametitle{For list monads}
 %For the list monad together with the 3 invariants. The following invariants for Map and join apply.
@@ -182,16 +184,16 @@ skip_and_get =
 %Thus list comphensions are syntactic sugar for some monads.
 %}
 \section{Continuations}
-\subsection{the CPS Intro}
+%\subsection{the CPS Intro}
+\subsection{} 
 \begin{frame}[fragile]
 \frametitle{Continuation Passing Style}
 
-\textbf{Continuation?}\\
+\textbf{Continuation}\\
 A continuation is a function representing the remainder of the program (to be continued). \\
-Value are represented by functions that take such a continuation and return the final result. \\\ \\ 
+Values are represented by functions that take such a continuation and return the final result. \\\ \\ 
 
-
-\textbf{Monad of continuations:}
+\textbf{Monad of Continuations}
 \begin{lstlisting}
 type K a  = (a -> Answer) -> Answer
 
@@ -228,11 +230,17 @@ m >>= k   = \c -> m (\a -> k a c)
 
 \lstset{basicstyle=\footnotesize\ttfamily}
 \begin{lstlisting}
-cplus a b = 
+cplus :: ((a -> Answer) -> Answer) -> 
+         ((a -> Answer) -> Answer) -> Answer
+cplus a' b' = 
   \c -> c (a' (\a -> b' (\b -> a + b)))
+
 n23 = \c -> c 23
 n19 = \c -> c 19
 
+\end{lstlisting}
+\pause
+\begin{lstlisting}
 n23 + n19 
 = \c -> c (n23          (\a -> n19 (\b ->  a + b))) 
 = \c -> c ((\c -> c 23) (\a -> n19 (\b ->  a + b)))
@@ -242,7 +250,6 @@ n23 + n19
 = \c -> c (                        (\b -> 23 + b) 19)
 = \c -> c (                               23 + 19)
 = \c -> c                                 42
-
 \end{lstlisting}
 
 
@@ -254,12 +261,63 @@ n23 + n19
 
 
 
-\subsection{Call with current continuation}
+
+%\subsection{Monads can express CPS}
+\begin{frame}[fragile]
+\frametitle{The CPS Interpreter can act as a Monad Interpreter}
+
+\begin{verbatim}
+type Answer = M Value
+
+showK    :: K a -> String
+showK n  =  showM (n unitM)
+
+promoteK    :: M a -> K a
+promoteK m  =  \c -> m >>= c
+\end{verbatim}
+
+
+%By selecting the right type for \texttt{Answer}, the CPS interpreter can act as the original monad based interpreter. \\
+%TODO: Write the definitions of PromoteK, ShowK\\
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Preserves Modularity: Error Monad Example}
+
+\begin{verbatim}
+errorK   :: String -> K a
+errorK s =  promoteK (errorE s)
+         =  \c -> (errorE s) >>= c
+         =  \c -> (Err s) >>= c
+         =  \c ->  Err s
+\end{verbatim}
+
+
+%Wadler shows it's just as simple with the CPS style monad interpreter as using the monad interpreter. \\ 
+%Examples with Error, State and Output monad. (Not that simple but anyhow).
+\end{frame}
+
+
+%\subsection{CPS can express Monads}
+\frame{
+\frametitle{Comparing CPS and Monads}
+Wadler compares CPS and Monads
+\begin{itemize}
+\item CPS always provides escape facility
+\item For monads it's a choice
+\item We can fix this with expressing CPS as monads
+\end{itemize}
+}
+
+
+
+%\subsection{Call with current continuation}
 \frame{
 \frametitle{Call with current continuation}
 This is too wordy on purpose... sorry about that ;). 
 \begin{itemize}
-\item Callcc takes the continuation and creates a new Function 
+\item Callcc takes the current continuation and creates a new Function 
 \item The function is saved in the enviroment
 \item Interprets the remaining expression with new enviroment
 \item Var extracts the continuation from the enviroment
@@ -267,30 +325,10 @@ This is too wordy on purpose... sorry about that ;).
 \end{itemize}
 }
 
-\subsection{Monads can express CPS}
-\frame{
-\frametitle{The CPS interpreter can act as a Monad interpreter}
-By selecting the right type for \texttt{Answer}, the CPS interpreter can act as the original monad based interpreter. \\
-TODO: Write the definitions of PromoteK, ShowK\\
-}
-\frame{
-\frametitle{Preserves modularity}
-Wadler shows it's just as simple with the CPS style monad interpreter as using the monad interpreter. \\ 
-Examples with Error, State and Output monad. (Not that simple but anyhow).
-}
-\subsection{CPS can express Monads}
-\frame{
-\frametitle{Comparing CPS and Monads}
-Wadler compares CPS and Monads
-\begin{itemize}
-\item CPS always provides escape facility.
-\item For monads it's a choice
-\item We can fix this with expressing CPS as monads.
-\end{itemize}
-}
 
 \section{What's the gain\ldots}
-\subsection{I don't care about interpreters!}
+%\subsection{I don't care about interpreters!}
+\subsection{}
 \frame{
 \frametitle{Applying this from a usage viewpoint}
 If i'm not a language researcher, when is this cool?
@@ -300,7 +338,7 @@ If i'm not a language researcher, when is this cool?
 \item Example C
 \end{itemize}
 }
-\subsection{Examples}
+%\subsection{Examples}
 \frame{
 \frametitle{Example A}
 A
