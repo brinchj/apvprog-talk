@@ -8,7 +8,7 @@
 \date{\today}
 \newcommand{\bind}{\texttt{>>=}}
 \newcommand{\ret}{\texttt{return}}
-\newcommand{\bs}{\char`\\}
+\newcommand{\bs}{\texttt{\char`\\}}
 \newcommand{\fs}{\char`/}
 \newcommand{\at}{\texttt{a}}
 \newcommand{\kt}{\texttt{k}}
@@ -26,14 +26,20 @@
 \end{frame}
 
 \section{Monads Invariants}
-\subsection{The  3 Invariants}
+\subsection{The 3 Invariants}
 \frame{
- \frametitle{Monad Invariants}
-\begin{align}
-\tag{Left identity}  &\ret\ \at~ & &\bind~\texttt{k}& &= \texttt{k a}\\ 
-\tag{Right identity} &\mt~ & &\bind\ \ret&  &= \texttt{m} 	 \\
-\tag{Associativity} &ToDO 
-\end{align}
+ \frametitle{Monad Laws}
+The monad laws consists of 3 invariants, that any monad must adhere to:
+\begin{align*}
+ &\ret\ \at~ & &\bind~\texttt{k}& &= \texttt{k a} && \text{(1: Left identity)} \\ 
+ &\mt~ & &\bind\ \ret&  &= \texttt{m} && \text{(2: Right identity)}	 \\
+\end{align*}
+\begin{align*}
+&&& \text{(3: Associativy)}  \\
+  &&  &\mt\ \bind\ \textbf{(}\texttt{\bs a -> (k a) \bind\ (\bs b -> h b)}\textbf{)} \\
+ &=& \textbf{(}&\mt\ \bind\ \texttt{(\bs a -> k a)}\textbf{)} \texttt{ \bind\ (\bs b -> h b)} \\
+ % &ToDO && \text{3: Associativity} 
+\end{align*}
 }
 \subsection{Using the invariants}
 
