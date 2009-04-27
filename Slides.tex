@@ -56,7 +56,6 @@ Instance Monad E where
     (Suc a) >>= k  = k a
     (Err s) >>= k  = Err s
 \end{lstlisting}
-Show how the error monad follows the invariants (or pick another monad)
 \end{frame}
 
 \begin{frame}[fragile]
@@ -87,10 +86,10 @@ By case analysis on E: Suc a, Err s
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]
-\frametitle{Associativity}
-Works if your types match (most of the time ;))
-\end{frame}
+%\begin{frame}[fragile]
+%\frametitle{Associativity}
+
+%\end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Monad syntax sugar in haskell}
@@ -111,6 +110,8 @@ do { x <- m0
 \end{lstlisting}
   \end{column}
 \end{columns}
+
+
 
 %1-3 slides of examples comparing bind/unit with do-syntax (transliteration)
 \end{frame}
@@ -157,8 +158,80 @@ skip_and_get =
 \end{lstlisting}
   \end{column}
 \end{columns}
+\end{frame}
 
 
+\begin{frame}[fragile]
+\frametitle{Monad syntax sugar in haskell}
+\vspace{-0.5cm}
+\begin{columns}[t]
+  \begin{column}{5cm}
+\begin{lstlisting}
+do { y <- do { x <- m
+             ; f x
+             }
+   ; g y 
+   }
+\end{lstlisting}
+  \end{column}
+  \begin{column}{5cm}
+\begin{lstlisting}
+(m >>= (\x -> f x)) 
+   >>= (\y -> g y)
+\end{lstlisting}
+  \end{column}
+\end{columns}
+
+\pause
+
+\begin{center}
+\textbf{By Associativity}
+\end{center}
+
+\vspace{-0.5cm}
+\begin{columns}[t]
+  \begin{column}{5cm}
+{\onslide<3->
+\begin{lstlisting}
+do { x <- m
+   ; y <- f x
+   ; g y 
+   }
+\end{lstlisting}
+}
+  \end{column}
+  \begin{column}{5cm}
+{\onslide<2->
+\begin{lstlisting}
+m >>= ((\x -> f x) 
+  >>=  (\y -> g y))
+\end{lstlisting}
+}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Monad syntax sugar in haskell}
+\vspace{-0.5cm}
+
+\begin{columns}[t]
+  \begin{column}{5cm}
+\begin{lstlisting}
+do { x <- m 
+   ; do { y <- f x 
+        ; g y 
+        }
+   }
+\end{lstlisting}
+  \end{column}
+  \begin{column}{5cm}
+\begin{lstlisting}
+m >>= ((\x -> f x) 
+  >>=  (\y -> g y))
+\end{lstlisting}
+  \end{column}
+\end{columns}
 
 %1-3. How monads help the naive programmer. (Don't break normal expectations)
 \end{frame}
@@ -351,11 +424,24 @@ Wadler compares CPS and Monads
 \begin{itemize}
 \item Web Frameworks
   \begin{enumerate}
-  \item Customer has picked product A
-  \item Collect payment information: callcc getPaymentInfo
-  \item Continue with payment information
+  \item User wants to delete wiki page
+  \item $\rightarrow$ ensure user is logged in 
+  \item $\rightarrow$ get confirmation
+  \item Delete page
   \end{enumerate}
 \end{itemize}
+
+\lstset{basicstyle=\footnotesize\ttfamily}
+\begin{lstlisting}
+(fun delete-page name)
+ (unless (get-session-value 'user)
+   (setf (get-session-value 'user) 
+         (callcc 'wiki-login)))
+ (callcc 'wiki-delete-confirm name)
+ (delete-page-now name)
+\end{lstlisting}
+\small
+\emph{Courtesy of Troels}
 
 \end{frame}
 
