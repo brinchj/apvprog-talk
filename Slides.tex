@@ -241,7 +241,7 @@ n19 = \c -> c 19
 \end{lstlisting}
 \pause
 \begin{lstlisting}
-n23 + n19 
+cplus n23 n19 
 = \c -> c (n23          (\a -> n19 (\b ->  a + b))) 
 = \c -> c ((\c -> c 23) (\a -> n19 (\b ->  a + b)))
 = \c -> c (             (\a -> n19 (\b ->  a + b)) 23)
@@ -251,7 +251,7 @@ n23 + n19
 = \c -> c (                               23 + 19)
 = \c -> c                                 42
 \end{lstlisting}
-
+\lstset{language=Haskell}
 
 %Example with add
 %Instead of evaluating the actual ``add``. The ``add'' computations is passed on to the next expression the interpreter meets. \\
@@ -266,7 +266,7 @@ n23 + n19
 \begin{frame}[fragile]
 \frametitle{The CPS Interpreter can act as a Monad Interpreter}
 
-\begin{verbatim}
+\begin{lstlisting}
 type Answer = M Value
 
 showK    :: K a -> String
@@ -274,7 +274,7 @@ showK n  =  showM (n unitM)
 
 promoteK    :: M a -> K a
 promoteK m  =  \c -> m >>= c
-\end{verbatim}
+\end{lstlisting}
 
 
 %By selecting the right type for \texttt{Answer}, the CPS interpreter can act as the original monad based interpreter. \\
@@ -285,13 +285,13 @@ promoteK m  =  \c -> m >>= c
 \begin{frame}[fragile]
 \frametitle{Preserves Modularity: Error Monad Example}
 
-\begin{verbatim}
+\begin{lstlisting}
 errorK   :: String -> K a
 errorK s =  promoteK (errorE s)
          =  \c -> (errorE s) >>= c
          =  \c -> (Err s) >>= c
          =  \c ->  Err s
-\end{verbatim}
+\end{lstlisting}
 
 
 %Wadler shows it's just as simple with the CPS style monad interpreter as using the monad interpreter. \\ 
@@ -300,7 +300,7 @@ errorK s =  promoteK (errorE s)
 
 
 %\subsection{CPS can express Monads}
-\frame{
+\begin{frame}[fragile]
 \frametitle{Comparing CPS and Monads}
 Wadler compares CPS and Monads
 \begin{itemize}
@@ -308,48 +308,80 @@ Wadler compares CPS and Monads
 \item For monads it's a choice
 \item We can fix this with expressing CPS as monads
 \end{itemize}
-}
+\end{frame}
 
 
 
 %\subsection{Call with current continuation}
-\frame{
+\begin{frame}[fragile]
 \frametitle{Call with current continuation}
-This is too wordy on purpose... sorry about that ;). 
+
+\begin{lstlisting}
+(callcc f)
+\end{lstlisting}
+
 \begin{itemize}
-\item Callcc takes the current continuation and creates a new Function 
-\item The function is saved in the enviroment
-\item Interprets the remaining expression with new enviroment
-\item Var extracts the continuation from the enviroment
-\item The Function is called with the ``4'' as argument
+\item Call \texttt{f} with the current continuation wrapped in a
+  function, \texttt{c}
+\item When \texttt{f} calls \texttt{c} the program ``continues''
+  execution from where \texttt{callcc} was originally called
+\item The expression involving the \texttt{callcc} call returns the
+  value passed to the continuation \texttt{c}
 \end{itemize}
-}
 
 
-\section{What's the gain\ldots}
+%\begin{itemize}
+%\item Callcc takes the current continuation and creates a new Function 
+%\item The function is saved in the enviroment
+%\item Interprets the remaining expression with new enviroment
+%\item Var extracts the continuation from the enviroment
+%\item The Function is called with the ``4'' as argument
+%\end{itemize}
+
+
+
+\end{frame}
+
+
+%\section{What's the gain\ldots}
 %\subsection{I don't care about interpreters!}
-\subsection{}
-\frame{
+%\subsection{}
+\begin{frame}[fragile]
 \frametitle{Applying this from a usage viewpoint}
-If i'm not a language researcher, when is this cool?
 \begin{itemize}
-\item Example A
-\item Example B
-\item Example C
+\item Web Frameworks
+  \begin{enumerate}
+  \item Customer has picked product A
+  \item Collect payment information: callcc getPaymentInfo
+  \item Continue with payment information
+  \end{enumerate}
 \end{itemize}
-}
+
+\end{frame}
+
+
 %\subsection{Examples}
-\frame{
-\frametitle{Example A}
-A
-}
-\frame{
-\frametitle{Example B}
-B
-}
-\frame{
-\frametitle{Example C}
-C
-}
+%\frame{
+%\frametitle{Example A}
+%A
+% }
+%\frame{
+%\frametitle{Example B}
+%B
+% }
+%\frame{
+%\frametitle{Example C}
+%C
+% }
+
+\begin{frame}[fragile]
+\section{Conclusion}
+\subsection{}
+\begin{itemize}
+\item Monads improves modularity
+\item Continuations are simpler when wrapped away in Monads
+\end{itemize}
+\end{frame}
+
 \end{document}
 			    
