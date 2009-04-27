@@ -214,6 +214,56 @@ m >>= ((\x -> f x)
 \begin{frame}[fragile]
 \frametitle{Monad syntax sugar in haskell}
 \vspace{-0.5cm}
+\begin{columns}[t]
+  \begin{column}{5cm}
+\begin{lstlisting}
+do { y <- do { x <- m
+             ; f x
+             }
+   ; g y 
+   }
+\end{lstlisting}
+  \end{column}
+  \begin{column}{5cm}
+\begin{lstlisting}
+(m >>= (\x -> f x)) 
+   >>= (\y -> g y)
+\end{lstlisting}
+  \end{column}
+\end{columns}
+
+\pause
+
+\begin{center}
+\textbf{By Associativity}
+\end{center}
+
+\vspace{-0.5cm}
+\begin{columns}[t]
+  \begin{column}{5cm}
+{\onslide<3->
+\begin{lstlisting}
+do { x <- m
+   ; y <- f x
+   ; g y 
+   }
+\end{lstlisting}
+}
+  \end{column}
+  \begin{column}{5cm}
+{\onslide<2->
+\begin{lstlisting}
+m >>= ((\x -> f x) 
+  >>=  (\y -> g y))
+\end{lstlisting}
+}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Monad syntax sugar in haskell}
+\vspace{-0.5cm}
 
 \begin{columns}[t]
   \begin{column}{5cm}
@@ -428,6 +478,7 @@ Wadler compares CPS and Monads
   \item $\rightarrow$ ensure user is logged in 
   \item $\rightarrow$ get confirmation
   \item Delete page
+
   \end{enumerate}
 \end{itemize}
 
@@ -444,7 +495,6 @@ Wadler compares CPS and Monads
 \emph{Courtesy of Troels}
 
 \end{frame}
-
 
 %\subsection{Examples}
 %\frame{
