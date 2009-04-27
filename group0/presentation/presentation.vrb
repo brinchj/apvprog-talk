@@ -1,0 +1,9 @@
+\frametitle {Call-by-name, cont'd}
+ Example: If implemented for a non-deterministic language, interpreting the
+ expression
+ \begin{lstlisting}
+  (App (Lam "x" (Add (Var "x") (Var "x")))
+       (Amb (Con 1) (Con 2)))
+ \end{lstlisting}
+
+ Now returns \texttt{"[2,3,3,4]"}.
