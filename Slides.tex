@@ -18,7 +18,7 @@
 \newcommand{\kt}{\texttt{k}}
 \newcommand{\mt}{\texttt{k}}
 \begin{document}
-
+\lstset{basicstyle=\footnotesize\ttfamily}
 %\section*{Introduction}
 \begin{frame}
   \titlepage
@@ -260,9 +260,9 @@ m >>= ((\x -> f x)
 \frametitle{Continuation Passing Style}
 
 \textbf{Continuation}\\
-A continuation is a function representing the remainder of the program (to be continued). \\
+A continuation is a function representing the remainder of the program (with which to be continued). \\
 Values are represented by functions that take such a continuation and return the final result. \\\ \\ 
-
+\pause
 \textbf{Monad of Continuations}
 \begin{lstlisting}
 type K a  = (a -> Answer) -> Answer
@@ -270,6 +270,7 @@ type K a  = (a -> Answer) -> Answer
 return :: a -> (a -> Answer) -> Answer
 return a  = \c -> c a
 
+>>= :: K a -> ( a -> K b ) -> K b
 m >>= k   = \c -> m (\a -> k a c)
 \end{lstlisting}
 
@@ -343,8 +344,37 @@ cplus n23 n19
 \end{frame}
 
 
+
+\begin{frame}[fragile]
+\frametitle{CPS adding in a monad}
+Using Monads to express CPS, readable code is an actual option:
+
+\begin{lstlisting}
+n19 >>= (n23 >>= plus)
+\end{lstlisting}
+Which we can now fold out using the definition of \texttt{>>=}:
+\pause
+\begin{lstlisting}
+m >>= k = \c -> m (\a -> k a c)
+
+  (n23 >>= plus)
+= \c -> n23 (\a -> plus a c))
+\end{lstlisting}
+Which is returns a function, that given an argument returns a variable, that
+given a continuation returns a value. Unfold once more:
+\pause
+\begin{lstlisting}
+  n19 >>= (\c -> n23 (\a -> plus a c))
+= \c1 -> n19 (\b -> (\c -> (n23 (\a -> plus a c)) b c1))
+\end{lstlisting}
+
+\pause And lo! This is roughly the same as the old \texttt{cplus}.
+\end{frame}
+
+
+
 \section{CPS and Monads}
-\subsection{} 
+\subsection{}
 %\subsection{Monads can express CPS}
 \begin{frame}[fragile]
 \frametitle{Expressing monads as CPS}
@@ -408,24 +438,8 @@ Wadler compares CPS and Monads
 \item The expression involving the \texttt{callcc} call returns the
   value passed to the continuation \texttt{c}
 \end{itemize}
-
-
-%\begin{itemize}
-%\item Callcc takes the current continuation and creates a new Function 
-%\item The function is saved in the enviroment
-%\item Interprets the remaining expression with new enviroment
-%\item Var extracts the continuation from the enviroment
-%\item The Function is called with the ``4'' as argument
-%\end{itemize}
-
-
-
 \end{frame}
 
-
-%\section{What's the gain\ldots}
-%\subsection{I don't care about interpreters!}
-%\subsection{}
 \begin{frame}[fragile]
 \frametitle{Applying this from a usage viewpoint}
 \begin{itemize}
@@ -435,7 +449,6 @@ Wadler compares CPS and Monads
   \item $\rightarrow$ ensure user is logged in 
   \item $\rightarrow$ get confirmation
   \item Delete page
-
   \end{enumerate}
 \end{itemize}
 
