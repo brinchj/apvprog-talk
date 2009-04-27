@@ -1,6 +1,7 @@
 \documentclass{beamer}
 \usepackage{amsmath}
 \usepackage{listings}
+\usepackage{listings}
 \lstset{language=Haskell,basicstyle=\ttfamily}
 %\usepackage{beamerthemesplit}
 \usetheme{Szeged}
@@ -18,34 +19,49 @@
 \newcommand{\mt}{\texttt{k}}
 \begin{document}
 
+%\section*{Introduction}
 \begin{frame}
   \titlepage
 \end{frame}
 
-
-%\section*{Outline}
-%\begin{frame}
-%  \tableofcontents
-%\end{frame}
+\begin{frame}
+  \tableofcontents
+\end{frame}
 
 
-\section{Monads Invariants}
+\section{The monad laws}
 %\subsection{The 3 Invariants}
 \subsection{}
-\frame{
+\begin{frame}[fragile]
  \frametitle{Monad Laws}
-The monad laws consists of 3 invariants, that any monad must adhere to:
+The monad laws consist of 3 invariants, that any monad must adhere to:
+
+1. Left identity:
+\begin{lstlisting}
+  return a >>= k = k a
+\end{lstlisting}
+
+2. Right identity:
+\begin{lstlisting}
+  m >>= return = m
+\end{lstlisting}
+
+%\begin{align*}
+% \text{(1: Left identity)&\ret\ \at~ & &\bind~\texttt{k}& &= \texttt{k a} } \\ 
+% &\mt~ & &\bind\ \ret&  &= \texttt{m} && \text{(2: Right identity)}	 \\
+%\end{align*}
+3. Associativity:
+\begin{lstlisting}
+     k >>= (\a -> (k a)  >>= (\b -> h b)) 
+  = (k >>= (\a ->  k a)) >>= (\b -> h b)
+\end{lstlisting}
 \begin{align*}
- &\ret\ \at~ & &\bind~\texttt{k}& &= \texttt{k a} && \text{(1: Left identity)} \\ 
- &\mt~ & &\bind\ \ret&  &= \texttt{m} && \text{(2: Right identity)}	 \\
-\end{align*}
-\begin{align*}
-&&& \text{(3: Associativity)}  \\
-  &&  &\mt\ \bind\ \textbf{(}\texttt{\bs a -> (k a) \bind\ (\bs b -> h b)}\textbf{)} \\
- &=& \textbf{(}&\mt\ \bind\ \texttt{(\bs a -> k a)}\textbf{)} \texttt{ \bind\ (\bs b -> h b)} \\
+%&&& \text{(3: Associativity)}  \\
+%  &&  &\mt\ \bind\ \textbf{(}\texttt{\bs a -> (k a) \bind\ (\bs b -> h b)}\textbf{)} \\
+% &=& \textbf{(}&\mt\ \bind\ \texttt{(\bs a -> k a)}\textbf{)} \texttt{ \bind\ (\bs b -> h b)} \\
  % &ToDO && \text{3: Associativity} 
 \end{align*}
-}
+\end{frame}
 %\subsection{Using the invariants}
 \begin{frame}[fragile]
 \frametitle{The Error Monad}
@@ -59,29 +75,32 @@ Instance Monad E where
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Left Identity}
+\frametitle{Left and Right Identities}
+\textbf{Left identity}
 \begin{lstlisting}
 return a >>= k 
   = (Suc a) >>= k 
-  = (\k (Suc a) -> k a) k (Suc a) 
   = k a
 \end{lstlisting}
-\end{frame}
+%\end{frame}
 
-\begin{frame}[fragile]
-\frametitle{Right Identity}
+%\begin{frame}[fragile]
+%\frametitle{Right Identity}
+
+\textbf{Right Identity:}\pause
+
 By case analysis on E: Suc a, Err s
+%  = (\k (Suc a) -> k a) (\a -> Suc a) (Suc a)
 \begin{lstlisting}
 (Suc a) >>= return 
   = (Suc a) >>= (\a -> Suc a)
-  = (\k (Suc a) -> k a) (\a -> Suc a) (Suc a)
   = (\a -> Suc a) a
-  = Suc a
-\end{lstlisting}
+  = (Suc a)
+\end{lstlisting}\pause
+%  = (\k (Err s) -> Err s) (\a -> Suc a) (Err s)
 \begin{lstlisting}
 (Err s) >>= return
   = (Err s) >>= (\a -> Suc a)
-  = (\k (Err s) -> Err s) (\a -> Suc a) (Err s)
   = (Err s)
 \end{lstlisting}
 \end{frame}
@@ -91,8 +110,10 @@ By case analysis on E: Suc a, Err s
 
 %\end{frame}
 
+\section{Using the Monad Laws}
+\subsection{} 
 \begin{frame}[fragile]
-\frametitle{Monad syntax sugar in haskell}
+\frametitle{Monad syntactic sugar in haskell}
 \begin{columns}[t]
   \begin{column}{5cm}
 \begin{lstlisting}
@@ -116,7 +137,7 @@ do { x <- m0
 %1-3 slides of examples comparing bind/unit with do-syntax (transliteration)
 \end{frame}
 \begin{frame}[fragile]
-\frametitle{How does them monad laws help me?}		
+\frametitle{Monad Laws: What's the Point?}		
 \textbf{Long Version:}
 \vspace{-0.5cm}
 \begin{columns}[t]
@@ -139,7 +160,7 @@ skip_and_get =
   \end{column}
 \end{columns}
 \pause
-\textbf{The right identity law provides this expected equivalence:} 
+\textbf{The right identity law provides the expected equivalence:} 
 \vspace{-0.5cm}
 \begin{columns}[t]
   \begin{column}{5cm}
@@ -162,7 +183,7 @@ skip_and_get =
 
 
 \begin{frame}[fragile]
-\frametitle{Monad syntax sugar in haskell}
+\frametitle{What's the Point? Cont'd}
 \vspace{-0.5cm}
 \begin{columns}[t]
   \begin{column}{5cm}
@@ -211,80 +232,6 @@ m >>= ((\x -> f x)
 \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]
-\frametitle{Monad syntax sugar in haskell}
-\vspace{-0.5cm}
-\begin{columns}[t]
-  \begin{column}{5cm}
-\begin{lstlisting}
-do { y <- do { x <- m
-             ; f x
-             }
-   ; g y 
-   }
-\end{lstlisting}
-  \end{column}
-  \begin{column}{5cm}
-\begin{lstlisting}
-(m >>= (\x -> f x)) 
-   >>= (\y -> g y)
-\end{lstlisting}
-  \end{column}
-\end{columns}
-
-\pause
-
-\begin{center}
-\textbf{By Associativity}
-\end{center}
-
-\vspace{-0.5cm}
-\begin{columns}[t]
-  \begin{column}{5cm}
-{\onslide<3->
-\begin{lstlisting}
-do { x <- m
-   ; y <- f x
-   ; g y 
-   }
-\end{lstlisting}
-}
-  \end{column}
-  \begin{column}{5cm}
-{\onslide<2->
-\begin{lstlisting}
-m >>= ((\x -> f x) 
-  >>=  (\y -> g y))
-\end{lstlisting}
-}
-  \end{column}
-\end{columns}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Monad syntax sugar in haskell}
-\vspace{-0.5cm}
-
-\begin{columns}[t]
-  \begin{column}{5cm}
-\begin{lstlisting}
-do { x <- m 
-   ; do { y <- f x 
-        ; g y 
-        }
-   }
-\end{lstlisting}
-  \end{column}
-  \begin{column}{5cm}
-\begin{lstlisting}
-m >>= ((\x -> f x) 
-  >>=  (\y -> g y))
-\end{lstlisting}
-  \end{column}
-\end{columns}
-
-%1-3. How monads help the naive programmer. (Don't break normal expectations)
-\end{frame}
 
 
 
@@ -306,7 +253,7 @@ m >>= ((\x -> f x)
 %Basicly any list comprehension in haskell can be translated to a monad.  \\
 %Thus list comphensions are syntactic sugar for some monads.
 %}
-\section{Continuations}
+\section{Intro to Continuations}
 %\subsection{the CPS Intro}
 \subsection{} 
 \begin{frame}[fragile]
@@ -348,23 +295,36 @@ m >>= k   = \c -> m (\a -> k a c)
 % Each operation passes on the actual computation to the next function as a 'continuation'
 %}
 
+
 \begin{frame}[fragile]
 \frametitle{Continuation Example?}
-
 \lstset{basicstyle=\footnotesize\ttfamily}
+This is how numbers are added in Continuation Passing Style.
 \begin{lstlisting}
+n23 :: (a -> Answer) -> Answer
+n23 = \c -> c 23
+
 cplus :: ((a -> Answer) -> Answer) -> 
-         ((a -> Answer) -> Answer) -> Answer
+         ((a -> Answer) -> Answer) -> 
+          (a -> Answer) -> Answer
+          
 cplus a' b' = 
   \c -> c (a' (\a -> b' (\b -> a + b)))
+\end{lstlisting}
+\pause Simple as pie, innit?
+\end{frame}
 
-n23 = \c -> c 23
-n19 = \c -> c 19
-
+\begin{frame}[fragile]
+\frametitle{Explaining Black Magic:}
+\lstset{basicstyle=\footnotesize\ttfamily}
+Now, let's compute \texttt{cplus n23 n19}: 
+\begin{lstlisting}
+cplus a' b' = 
+  \c -> c (a' (\a -> b' (\b -> a + b)))
 \end{lstlisting}
 \pause
 \begin{lstlisting}
-cplus n23 n19 
+cplus n23 n19
 = \c -> c (n23          (\a -> n19 (\b ->  a + b))) 
 = \c -> c ((\c -> c 23) (\a -> n19 (\b ->  a + b)))
 = \c -> c (             (\a -> n19 (\b ->  a + b)) 23)
@@ -383,14 +343,14 @@ cplus n23 n19
 \end{frame}
 
 
-
-
+\section{CPS and Monads}
+\subsection{} 
 %\subsection{Monads can express CPS}
 \begin{frame}[fragile]
-\frametitle{The CPS Interpreter can act as a Monad Interpreter}
-
+\frametitle{Expressing monads as CPS}
+\textbf{A CPS interpreter can act as a monad interpreter}
 \begin{lstlisting}
-type Answer = M Value
+type Answer = M a
 
 showK    :: K a -> String
 showK n  =  showM (n unitM)
@@ -406,8 +366,7 @@ promoteK m  =  \c -> m >>= c
 
 
 \begin{frame}[fragile]
-\frametitle{Preserves Modularity: Error Monad Example}
-
+\frametitle{CPS also preserves modularity}
 \begin{lstlisting}
 errorK   :: String -> K a
 errorK s =  promoteK (errorE s)
@@ -415,7 +374,6 @@ errorK s =  promoteK (errorE s)
          =  \c -> (Err s) >>= c
          =  \c ->  Err s
 \end{lstlisting}
-
 
 %Wadler shows it's just as simple with the CPS style monad interpreter as using the monad interpreter. \\ 
 %Examples with Error, State and Output monad. (Not that simple but anyhow).
@@ -433,9 +391,8 @@ Wadler compares CPS and Monads
 \end{itemize}
 \end{frame}
 
-
-
-%\subsection{Call with current continuation}
+\section{Callcc}
+\subsection{} 
 \begin{frame}[fragile]
 \frametitle{Call with current continuation}
 
