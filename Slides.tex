@@ -347,7 +347,7 @@ cplus n23 n19
 \subsection{} 
 %\subsection{Monads can express CPS}
 \begin{frame}[fragile]
-\frametitle{Expressing monads as CPS}
+\frametitle{Expressing Monads as CPS}
 \textbf{A CPS interpreter can act as a monad interpreter}
 \begin{lstlisting}
 type Answer = M a
@@ -366,7 +366,7 @@ promoteK m  =  \c -> m >>= c
 
 
 \begin{frame}[fragile]
-\frametitle{CPS also preserves modularity}
+\frametitle{CPS also preserves Modularity}
 \begin{lstlisting}
 errorK   :: String -> K a
 errorK s =  promoteK (errorE s)
@@ -394,7 +394,7 @@ errorK s =  promoteK (errorE s)
 \section{Callcc}
 \subsection{} 
 \begin{frame}[fragile]
-\frametitle{Call with current continuation}
+\frametitle{Call with Current Continuation}
 
 \begin{lstlisting}
 (callcc f)
@@ -427,7 +427,7 @@ errorK s =  promoteK (errorE s)
 %\subsection{I don't care about interpreters!}
 %\subsection{}
 \begin{frame}[fragile]
-\frametitle{Applying this from a usage viewpoint}
+\frametitle{Example Usage}
 \begin{itemize}
 \item Web Application: Wiki
   \begin{enumerate}
@@ -474,11 +474,20 @@ errorK s =  promoteK (errorE s)
 \subsection{}
 Monads can
 \begin{itemize}
-\item[$\rightarrow$] add impure features in pure languages
+\item[$\rightarrow$] add impure features to pure languages
 \item[$\rightarrow$] improve modularity
 \item[$\rightarrow$] simplify code (hide common operations)
 \item[$\rightarrow$] $\dots$ continuations wrapped in Monads yields
   simpler programs
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\section{Questions?}
+\begin{itemize}
+\item Monads
+\item Continuations
 \end{itemize}
 \end{frame}
 
