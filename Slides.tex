@@ -13,7 +13,7 @@
 \newcommand{\bind}{\texttt{>>=}}
 \newcommand{\ret}{\texttt{return}}
 \newcommand{\bs}{\texttt{\char`\\}}
-\newcommand{\fs}{\char`/}
+\newcommand{\fs}{\char`/}   
 \newcommand{\at}{\texttt{a}}
 \newcommand{\kt}{\texttt{k}}
 \newcommand{\mt}{\texttt{k}}
@@ -65,6 +65,7 @@ The monad laws consist of 3 invariants, that any monad must adhere to:
 %\subsection{Using the invariants}
 \begin{frame}[fragile]
 \frametitle{The Error Monad}
+In case you forgot $\ldots$
 \begin{lstlisting}
 data E = Suc a | Err String
 Instance Monad E where
@@ -360,7 +361,7 @@ m >>= k = \c -> m (\a -> k a c)
   (n23 >>= plus)
 = \c -> n23 (\a -> plus a c))
 \end{lstlisting}
-Which is returns a function, that given an argument returns a variable, that
+Which returns a function, that given an argument returns a variable, that
 given a continuation returns a value. Unfold once more:
 \pause
 \begin{lstlisting}
