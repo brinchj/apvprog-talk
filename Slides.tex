@@ -236,6 +236,13 @@ m >>= ((\x -> f x)
 \end{columns}
 \end{frame}
 
+
+\begin{frame}
+\large{$\dots$and now to something completely different$\dots$}
+\end{frame}
+
+
+
 %%\subsection{Monads and lists}
 %\frame{
 %\frametitle{For list monads}
@@ -383,11 +390,11 @@ given a continuation returns a value. Unfold once more:
 \begin{lstlisting}
 type Answer = M a
 
-showK    :: K a -> String
-showK n  =  showM (n unitM)
-
 promoteK    :: M a -> K a
 promoteK m  =  \c -> m >>= c
+
+showK    :: K a -> String
+showK n  =  showM (n unitM)
 \end{lstlisting}
 
 
@@ -398,6 +405,7 @@ promoteK m  =  \c -> m >>= c
 
 \begin{frame}[fragile]
 \frametitle{CPS also preserves Modularity}
+``Promoting'' an error:
 \begin{lstlisting}
 errorK   :: String -> K a
 errorK s =  promoteK (errorE s)
@@ -498,10 +506,13 @@ Monads can
 
 
 \begin{frame}
+\frametitle{Questions?}
 \section{Questions?}
 \begin{itemize}
 \item Monads
+\item[$\rightarrow$] $\dots$ Monad laws
 \item Continuations
+\item[$\rightarrow$] $\dots$ Callcc
 \end{itemize}
 \end{frame}
 
